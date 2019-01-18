@@ -1,19 +1,99 @@
-const mysql = require('mysql')
+'use strict';
+const mysql = require('mysql');
 
-// 链接池：创建多个链接、复用与分发链接
-const pool = mysql.createPool({
+var pool = mysql.createPool({
+    connectionLimit: 5,
     host: '119.3.5.8',
-    port: '3306',
     user: 'freebooz',
-    password: '750110'
-})
+    password: '750110',
+    database: 'finadb',
+    multipleStatements: true  //是否允许执行多条sql语句
+});
+//将结果已对象数组返回
+var row = (sql, ...params) => {
+    return new Promise(function (resolve, reject) {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            connection.query(sql, params, function (error, res) {
+                connection.release();
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(res);
+            });
+        });
+    });
+};
+//返回一个对象
+var first = (sql, ...params) => {
+    return new Promise(function (resolve, reject) {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            connection.query(sql, params, function (error, res) {
+                connection.release();
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(res[0] || null);
+            });
+        });
+    });
+};
+//返回单个查询结果
+var single = (sql, ...params) => {
+    return new Promise(function (resolve, reject) {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            connection.query(sql, params, function (error, res) {
+                connection.release();
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                for (let i in res[0]) {
+                    resolve(res[0][i] || null);
+                    return;
+                }
+                resolve(null);
+            });
+        });
+    });
+}
+//执行代码，返回执行结果
+var execute = (sql, ...params) => {
+    return new Promise(function (resolve, reject) {
+        pool.getConnection(function (err, connection) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            connection.query(sql, params, function (error, res) {
+                connection.release();
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(res);
+            });
+        });
+    });
+}
 
-// 封装
-query = function (sql, callback) {
-    pool.getConnection(function (err, connection) {
-        connection.query(sql, function (err, results) {
-            callback(err, results) // 结果回调
-            connection.release() // 释放连接资源 | 跟 connection.destroy() 不同，它是销毁
-        })
-    })
+//模块导出
+module.exports = {
+    ROW: row,
+    FIRST: first,
+    SINGLE: single,
+    EXECUTE: execute
 }
