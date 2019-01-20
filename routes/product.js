@@ -18,4 +18,12 @@ router.get('/list', function (req, res, next) {
     });
 });
 
+/* 编辑商品信息. */
+router.post('/list', function (req, res, next) {
+    var sql = "select * from base_product";
+    db.query(sql, function (err, data) {
+        res.send(data);
+    });
+});
+
 module.exports = router;
