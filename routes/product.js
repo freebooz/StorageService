@@ -12,12 +12,7 @@ router.get('/cate/list', function (req, res, next) {
 
 /* 获取商品列表. */
 router.get('/list', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    res.header("X-Powered-By", ' 3.2.1')
-    res.header("Content-Type", "application/json;charset=utf-8");    
-    var sql = "select * from base_product";
+    var sql = "select * from base_product limit 1000";
     db.query(sql, function (err, data) {
         res.send(data);
     });
@@ -25,11 +20,7 @@ router.get('/list', function (req, res, next) {
 
 /* 编辑商品信息. */
 router.post('/list', function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS");
-    res.header("X-Powered-By", ' 3.2.1')
-    res.header("Content-Type", "application/json;charset=utf-8");
+    console.log(req.body)
     var sql = "select * from base_product";
     db.query(sql, function (err, data) {
         res.send(data);
